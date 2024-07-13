@@ -1,6 +1,8 @@
 paths:
   /users/export:
     get:
+    tags:
+        - user
       summary: Export user data
       responses:
         '200':
@@ -26,6 +28,8 @@ paths:
 
   /users/search:
     get:
+    tags:
+        - user
       summary: Search user data
       parameters:
         - name: query
