@@ -22,8 +22,593 @@ tags:
     description:  API for user invite management
   - name: organisations
     description:  API for organisation management
+  - name: notification
+    description: Notification operations
+  - name: pages
+    description: Pages available
+  - name: user
+    description: API for user related operations
 
 paths:
+  /contact:
+    post:
+      tags:
+        - pages
+      summary: Submit a contact form
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: John Doe
+                email:
+                  type: string
+                  example: john.doe@example.com
+                message:
+                  type: string
+                  example: Hello, I have an inquiry.
+      responses:
+        '200':
+          description: Message sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Your message has been sent.
+        '422':
+          description: Unprocessed Entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnprocessedEntityErrorSchema"
+
+  /contact/messages:
+    get:
+      tags:
+        - pages
+      summary: Retrieve all contact messages (Admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messages:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        email:
+                          type: string
+                        message:
+                          type: string
+                        created_at:
+                          type: string
+                          format: date-time
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+
+  /dashboard:
+    get:
+      tags:
+        - pages
+      summary: Retrieve general dashboard data
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recent_activities:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        activity_type:
+                          type: string
+                          example: login
+                        timestamp:
+                          type: string
+                          format: date-time
+                  statistics:
+                    type: object
+                    properties:
+                      total_users:
+                        type: integer
+                        example: 100
+                      total_payments:
+                        type: number
+                        format: float
+                        example: 2000.50
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+
+  /waitlist:
+    post:
+      tags:
+        - pages
+      summary: Add a user to the waitlist
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: john.doe@example.com
+                interest_area:
+                  type: string
+                  example: loan
+      responses:
+        '200':
+          description: User added to the waitlist
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: You have been added to the waitlist.
+        '422':
+          description: Unprocessed Entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnprocessedEntityErrorSchema"
+
+    get:
+      tags:
+        - pages
+      summary: Retrieve the waitlist (Admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  waitlist:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        email:
+                          type: string
+                        interest_area:
+                          type: string
+                        created_at:
+                          type: string
+                          format: date-time
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+
+  /pages/marketing:
+    post:
+      tags:
+        - pages
+      summary: Update marketing page content (Admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  example: <h1>Marketing Content</h1>
+      responses:
+        '200':
+          description: Marketing page updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Marketing page updated successfully.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+
+  /data/charts:
+    get:
+      tags:
+        - pages
+      summary: Retrieve data for charts
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  charts:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        chart_id:
+                          type: integer
+                        chart_type:
+                          type: string
+                          example: line
+                        data:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              x:
+                                type: number
+                              y:
+                                type: number
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+
+  /pages/{pageId}/edit:
+    get:
+      tags:
+        - pages
+      summary: Retrieve content for editing a specific page by ID
+      parameters:
+        - name: pageId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  page_id:
+                    type: integer
+                  content:
+                    type: string
+                    description: HTML or JSON content of the page
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+
+    put:
+      tags:
+        - pages
+      summary: Update content of a specific page by ID
+      parameters:
+        - name: pageId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  example: <h1>Updated Page Content</h1>
+      responses:
+        '200':
+          description: Page content updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Page content updated successfully.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+
+  /blogs:
+    get:
+      tags:
+        - pages
+      summary: Retrieve a list of blog posts
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  blogs:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        blog_id:
+                          type: integer
+                        title:
+                          type: string
+                        excerpt:
+                          type: string
+                        author_id:
+                          type: integer
+                        created_at:
+                          type: string
+                          format: date-time
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+
+    post:
+      tags:
+        - pages
+      summary: Create a new blog post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: New Blog Post
+                content:
+                  type: string
+                  example: This is the content of the new blog post
+      responses:
+        '200':
+          description: Blog post created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Blog post created successfully.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+        '422':
+          description: Unprocessed Entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnprocessedEntityErrorSchema"
+
+  /pages/{pageId}/content:
+    get:
+      tags:
+        - pages
+      summary: Retrieve content for a specific page by ID
+      parameters:
+        - name: pageId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  page_id:
+                    type: integer
+                  content:
+                    type: string
+                    description: HTML or JSON content of the page
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+
+    put:
+      tags:
+        - pages
+      summary: Update content of a specific page by ID
+      parameters:
+        - name: pageId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  example: <h1>Updated Page Content</h1>
+      responses:
+        '200':
+          description: Page content updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Page content updated successfully.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+
+  /blogs/{blogId}:
+    get:
+      tags:
+        - pages
+      summary: Retrieve details of a specific blog post
+      parameters:
+        - name: blogId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  blog_id:
+                    type: integer
+                  title:
+                    type: string
+                  content:
+                    type: string
+                  author_id:
+                    type: integer
+                  created_at:
+                    type: string
+                    format: date-time
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+        
+
+    put:
+      tags:
+        - pages
+      summary: Update details of a specific blog post
+      parameters:
+        - name: blogId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Updated Blog Title
+                content:
+                  type: string
+                  example: Updated blog content
+      responses:
+        '200':
+          description: Blog post updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Blog post updated successfully.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
 
   # Auth paths
   /auth/register:
@@ -1038,10 +1623,661 @@ paths:
               schema:
                 $ref: "#/components/schemas/UnauthorizedErrorSchema"
 
+  /payments:
+    get:
+      tags:
+        - payment
+      summary: List all payments
+      security:
+        - bearerAuth: []
+      description: Retrieves a list of all payments.
+      operationId: listPayments
+      responses:
+        '200':
+          description: A list of payments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+    post:
+      tags:
+        - payment
+      summary: Create a new payment
+      security:
+        - bearerAuth: []
+      description: Creates a new payment record.
+      operationId: createPayment
+      requestBody:
+        description: Payment details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPayment'
+        required: true
+      responses:
+        '201':
+          description: Payment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessedEntityErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
 
+  /payments/{paymentId}:
+    get:
+      tags:
+        - payment
+      summary: Get payment by ID
+      security:
+        - bearerAuth: []
+      description: Retrieves a payment by its ID.
+      operationId: getPaymentById
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the payment to retrieve
+      responses:
+        '200':
+          description: Payment details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+    put:
+      tags:
+        - payment
+      summary: Update an existing payment
+      security:
+        - bearerAuth: []
+      description: Updates the details of an existing payment by its ID.
+      operationId: updatePayment
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the payment to update
+      requestBody:
+        description: Updated payment details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePayment'
+        required: true
+      responses:
+        '200':
+          description: Payment updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessedEntityErrorSchema'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+
+  /payments/stripe:
+    post:
+      tags:
+        - payment
+      summary: Create a new payment via Stripe
+      security:
+        - secretKeyAuth: []
+      description: Creates a new payment record via Stripe.
+      operationId: createStripePayment
+      requestBody:
+        description: Stripe payment details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StripePayment'
+        required: true
+      responses:
+        '201':
+          description: Stripe payment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessedEntityErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+  /payments/flutterwave:
+    post:
+      tags:
+        - payment
+      summary: Create a new payment via Flutterwave
+      security:
+        - secretKeyAuth: []
+      description: Creates a new payment record via Flutterwave.
+      operationId: createFlutterwavePayment
+      requestBody:
+        description: Flutterwave payment details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlutterwavePayment'
+        required: true
+      responses:
+        '201':
+          description: Flutterwave payment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessedEntityErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+
+  /payments/lemonsqueezy:
+    post:
+      tags:
+        - payment
+      summary: Create a new payment via LemonSqueezy
+      security:
+        - secretKeyAuth: []
+      description: Creates a new payment record via LemonSqueezy.
+      operationId: createLemonSqueezyPayment
+      requestBody:
+        description: LemonSqueezy payment details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LemonSqueezyPayment'
+        required: true
+      responses:
+        '201':
+          description: LemonSqueezy payment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessedEntityErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+
+  /notifications/{user_id}:
+    get:
+      tags:
+        - notification
+      summary: Get notifications by user ID
+      security:
+        - secretKeyAuth: []
+      description: Retrieves notifications based on the provided user ID.
+      operationId: getNotificationsByUserId
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the user to retrieve notifications for
+      responses:
+        '200':
+          description: A list of notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '400':
+          description: No notifications found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+
+  /users/{user_id}:
+    put:
+      tags:
+        - user
+      summary: Update user info
+      security:
+        - secretKeyAuth: []
+      description: Updates the information of an existing user.
+      operationId: updateUserInfo
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the user to update
+      requestBody:
+        description: Updated user information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUser'
+        required: true
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchema'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessedEntityErrorSchema'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+    delete:
+      tags:
+        - user
+      summary: Delete a user
+      security:
+        - secretKeyAuth: []
+      description: Deletes a user by their ID.
+      operationId: deleteUser
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the user to delete
+      responses:
+        '204':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseSchema'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+
+  /users/{user_id}/organizations:
+
+    get:
+      tags:
+        - user
+      summary: Query organizations where a user belongs
+      security:
+        - secretKeyAuth: []
+      description: Retrieves a list of organizations where the specified user belongs.
+      operationId: getUserOrganizations
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the user to query organizations for
+      responses:
+        '200':
+          description: A list of organizations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Organization'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+  
+  /users/{userId}/data:
+    get:
+      tags:
+        - user
+      summary: Retrieve user-specific data for the dashboard
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        data_id:
+                          type: integer
+                        data_type:
+                          type: string
+                        data_content:
+                          type: object
+                        created_at:
+                          type: string
+                          format: date-time
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+
+  /users/settings:
+    get:
+      tags:
+        - user
+      summary: Retrieve user settings
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  settings:
+                    type: object
+                    properties:
+                      email_notifications:
+                        type: boolean
+                      profile_visibility:
+                        type: string
+                      theme:
+                        type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+
+    put:
+      tags:
+        - user
+      summary: Update user settings
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                settings:
+                  type: object
+                  properties:
+                    email_notifications:
+                      type: boolean
+                    profile_visibility:
+                      type: string
+                      enum: [public, private]
+                    theme:
+                      type: string
+                      enum: [dark, light]
+      responses:
+        '200':
+          description: Settings updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Settings updated successfully.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
 components:
 
   schemas:
+
+    SuccessResponseSchema:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        statusCode:
+          type: integer
+          description: >
+            The HTTP status code. Usually 200 , 201, 204 etc
+          example: 201
+        message:
+          type: string
+          description: >
+            A basic message describing a request was processed successfully.
+            example: "Successfully"
+
+    ServerErrorSchema:
+      type: object
+      properties:
+        status:
+          type: string
+          description: |-
+            The responses will contain this property with
+            - Internal server error
+          example: Internal server error
+        statusCode:
+          type: integer
+          description: >
+            The HTTP status code. Usually missing if `error` is present.
+          example: 500
+        message:
+          type: string
+          description: >
+            A basic message describing the problem from the server.
 
     BadRequestErrorSchema:
       type: object
@@ -1157,22 +2393,21 @@ components:
     UserResponseSchema:
       type: object
       properties:
-            access_token:
-              type: string
-              description: A valid JWT that will expire in `expires_in` seconds.
-            refresh_token:
-              type: string
-              description: An opaque string that can be used once to obtain a new access and refresh token.
-            token_type:
-              type: string
-              description: What type of token this is. Only `bearer` returned, may change in the future.
-            expires_at:
-              type: string
-              format: date-time
-              description: UNIX timestamp after which the `access_token` should be renewed by using the refresh token with the `refresh_token` grant type.
-            user:
-              $ref: "#/components/schemas/UserSchema"
-
+        access_token:
+          type: string
+          description: A valid JWT that will expire in `expires_in` seconds.
+        refresh_token:
+          type: string
+          description: An opaque string that can be used once to obtain a new access and refresh token.
+        token_type:
+          type: string
+          description: What type of token this is. Only `bearer` returned, may change in the future.
+        expires_at:
+          type: string
+          format: date-time
+          description: UNIX timestamp after which the `access_token` should be renewed by using the refresh token with the `refresh_token` grant type.
+        user:
+          $ref: "#/components/schemas/UserSchema"
 
     IdentitySchema:
       type: object
@@ -1196,7 +2431,7 @@ components:
         email:
           type: string
           format: email
-
+          
     UnprocessedEntity:
       type: object
       properties:
@@ -1221,13 +2456,239 @@ components:
           type: string
           description: organisation description
 
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        organization_id:
+          type: integer
+          example: 2
+        amount:
+          type: number
+          format: float
+          example: 50.00
+        currency:
+          type: string
+          example: "NGN"
+        provider:
+          type: string
+          example: "flutterwave"
+        transaction_id:
+          type: string
+          example: "txn_01"
+        provider_transaction_id:
+          type: string
+          example: "flu_txn_02"
+        status:
+          type: integer
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    NewPayment:
+      type: object
+      required:
+        - user_id
+        - amount
+        - currency
+        - payment_method
+        - provider
+        - transaction_id
+        - provider_transaction_id
+      properties:
+        user_id:
+          type: integer
+          example: 1
+        amount:
+          type: number
+          format: float
+          example: 50.00
+        currency:
+          type: string
+          example: "NGN"
+        provider:
+          type: string
+          example: "flutterwave"
+          enum:
+            - "flutterwave"
+            - "stripe"
+            - "lemonsqueezy"
+        transaction_id:
+          type: string
+          example: "txn_01"
+        provider_transaction_id:
+          type: string
+          example: "flu_txn_02"
+        status:
+          type: integer
+          example: 1
+
+    UpdatePayment:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 1
+
+    StripePayment:
+      type: object
+      required:
+        - user_id
+        - amount
+        - email
+        - card_number
+        - expiry
+        - cvv
+      properties:
+        user_id:
+          type: integer
+          example: 1
+        amount:
+          type: number
+          format: float
+          example: 50.00
+        email:
+          type: string
+          example: "example@gmail.com"
+        card_number:
+          type: string
+          example: "5678 8992 9900 9292"
+        expiry:
+          type: string
+          example: "10/27"
+        cvv:
+          type: integer
+          example: 672
+        description:
+          type: string
+          example: "Payment for service X"
+
+    FlutterwavePayment:
+      type: object
+      required:
+        - user_id
+        - amount
+        - email
+        - currency
+      properties:
+        user_id:
+          type: integer
+          example: 1
+        amount:
+          type: number
+          format: float
+          example: 50.00
+        email:
+          type: string
+          example: "example@gmail.com"
+        currency:
+          type: string
+          example: "NGN"
+        description:
+          type: string
+          example: "Payment for service Y"
+
+    LemonSqueezyPayment:
+      type: object
+      required:
+        - user_id
+        - email
+        - amount
+        - currency
+      properties:
+        user_id:
+          type: integer
+          example: 1
+        amount:
+          type: number
+          format: float
+          example: 50.00
+        email:
+          type: string
+          example: "example@gmail.com"
+        currency:
+          type: string
+          example: "NGN"
+        description:
+          type: string
+          example: "Payment for service Z"
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: "New Feature Update"
+        message:
+          type: string
+          example: "We have updated our platform with new features."
+        user_id:
+          type: integer
+          example: 123
+        read:
+          type: boolean
+          example: false
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    UpdateUser:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          format: phone
+        language:
+          type: string
+
+    Organization:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Example Organization"
+        description:
+          type: string
+          example: "An example organization"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
   securitySchemes:
-      bearerAuth:
-        type: http
-        scheme: bearer
-        bearerFormat: JWT
-      secretKeyAuth:
-        type: apiKey
-        in: header
-        name: Authorization
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    secretKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
   
