@@ -1010,6 +1010,8 @@ paths:
       tags:
         - auth
       summary: Verify the password reset token and set a new password
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -1078,6 +1080,8 @@ paths:
       tags:
         - invite
       summary: Generates an invitation token
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -1144,6 +1148,8 @@ paths:
       tags:
         - invite
       summary: Verify token
+      security:
+        - bearerAuth: []
       parameters:
         - in: query
           name: token
@@ -1204,6 +1210,8 @@ paths:
       tags:
         - invite
       summary: Verify token
+      security:
+        - bearerAuth: []
       parameters:
         - in: query
           name: token
@@ -1244,6 +1252,8 @@ paths:
       tags:
         - organisations
       summary: Register a new organisation
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -1304,6 +1314,8 @@ paths:
       tags:
         - organisations
       summary: Get all organisation
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Organisations fetched successfully
@@ -1348,7 +1360,8 @@ paths:
       tags:
         - organisations
       summary: Get an organisation by id
-      
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: orgId
@@ -1397,7 +1410,8 @@ paths:
       tags:
         - organisations
       summary: Delete an organisation by id
-      
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: orgId
@@ -1444,6 +1458,8 @@ paths:
       tags:
         - organisations
       summary: Add a user to an organisation by id
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: orgId
@@ -1508,6 +1524,8 @@ paths:
       tags:
         - organisations
       summary: Delete a user from an organisation
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: orgId
@@ -1574,6 +1592,8 @@ paths:
       tags:
         - organisations
       summary: Get users in an organisation
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: orgId
