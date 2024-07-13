@@ -8,14 +8,6 @@ This document provides an overview of the API endpoints available in the system,
 
 https://www.example.com/api/v1
 
-## Table of Contents
-
-- [Authentication](#authentication)
-  - [Register](#register)
-  - [Login](#login)
-  - [Social Authentication](#social-authentication)
-  - [Magic Link Authentication](#magic-link-authentication)
-  - [Change Password](#change-password)
 
 ## Authentication 
  **Description:** Endpoints for user registration and authentication.
@@ -35,6 +27,56 @@ https://www.example.com/api/v1
 **Endpoint:** `POST /auth/magic-link/password-reset/verify` **Description:** Verify the password reset token and set a new password.
 
 **Endpoint:** `PUT /auth/change-password` **Description:** Verify the password reset token and set a new password.
+
+
+## User
+ **Description:** User related operations.
+
+ **Endpoint:** `GET /users` **Description:** Get all users.
+
+ **Endpoint:** `GET /users/{userId}` **Description:** Get single user.
+
+ **Endpoint:** `PUT /users/{userid}` **Description:** Update single user.
+
+ **Endpoint:** `DELETE /users/{userId}` **Description:** Delete single user.
+
+ **Endpoint:** `GET /users/{userId}/organisation` **Description:** Query organisations where a user belongs.
+
+ **Endpoint:** `GET /users/{userId}/data` **Description:** Retrieve user-specific data for the dashboard.
+
+ **Endpoint:** `GET /users/settings` **Description:** Retrieve user settings.
+
+ **Endpoint:** `UPDATE /users/settings` **Description:** Update user settings.
+
+
+ ## Organisation
+ **Description:** Organisation related operations.
+
+ **Endpoint:** `GET /organisations` **Description:** Get all users.
+
+ **Endpoint:** `POST /organisation` **Description:** Register a new organisation.
+
+ **Endpoint:** `GET /organisations` **Description:** Get all organisation.
+
+ **Endpoint:** `GET /organisations/{orgId}` **Description:** Get an organisation by Id.
+
+ **Endpoint:** `DELETE /organisations/{orgId}` **Description:** Delete an organisation by id.
+
+ **Endpoint:** `POST /organisations/{orgId}/users` **Description:** Add a user to an organisation by id.
+
+ **Endpoint:** `PUT /organisations/{orgId}/users` **Description:** Delete a user from an organisation.
+
+ **Endpoint:** `GET /organisations/{orgId}/users` **Description:** Get users in an organisation.
+
+
+ ## Super Admin
+ **Description:** Superadmin operations.
+
+  **Endpoint:** `GET /users/{userId}` **Description:** Get single user.
+
+  **Endpoint:** `GET /users/{userId}/organisation` **Description:** Query organisations where a user belongs.
+
+   **Endpoint:** `GET /users` **Description:** Get all users.
 
 
 ## Invite
@@ -58,6 +100,18 @@ https://www.example.com/api/v1
 
  **Endpoint:** `GET /contacts/messages` **Description:** Retrieve all contact messages (Admin only).
 
+ **Endpoint:** `POST /waitlist` **Description:** Add a user to the waitlist.
+
+ **Endpoint:** `GET /waitlist` **Description:** Retrieve the waitlist (Admin only).
+
+ **Endpoint:** `POST /pages/marketing` **Description:** Update marketing page content (Admin only).
+
+ **Endpoint:** `POST /data/charts` **Description:** Retrieve data for charts.
+
+ **Endpoint:** `GET /blogs` **Description:** Retrieve a list of blog posts.
+
+ **Endpoint:** `GET /blogs` **Description:** Retrieve a list of blog posts.
+
 
  ## Payment
  **Description:** Payment operations.
@@ -75,3 +129,4 @@ https://www.example.com/api/v1
  **Endpoint:** `POST /payments/flutterwave` **Description:** Create a new payment via Flutterwave.
 
  **Endpoint:** `POST /payments/lemonsqueezy` **Description:** Create a new payment via Lemonsqueezy.
+
