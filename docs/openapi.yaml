@@ -1,9 +1,9 @@
 openapi: 3.0.3
 info:
-  title: User Management and Organization API
+  title: User Management and organisation API
   description: |-
-    This API provides functionalities for user management, organization management, authentication, messaging, payments, and various other services.
-    It includes features like social authentication, email notifications, payment integrations with Stripe and Flutterwave, and comprehensive user and organization management.
+    This API provides functionalities for user management, organisation management, authentication, messaging, payments, and various other services.
+    It includes features like social authentication, email notifications, payment integrations with Stripe and Flutterwave, and comprehensive user and organisation management.
   termsOfService: http://example.com/terms/
   contact:
     email: support@example.com
@@ -28,6 +28,8 @@ tags:
     description: Pages available
   - name: user
     description: API for user related operations
+  - name: super admin
+    description: API for super admin related operations
 
 paths:
   /contact:
@@ -227,44 +229,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/UnauthorizedErrorSchema"
 
-  /pages/marketing:
-    post:
-      tags:
-        - pages
-      summary: Update marketing page content (Admin only)
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                content:
-                  type: string
-                  example: <h1>Marketing Content</h1>
-      responses:
-        '200':
-          description: Marketing page updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  message:
-                    type: string
-                    example: Marketing page updated successfully.
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UnauthorizedErrorSchema"
-
   /data/charts:
     get:
       tags:
@@ -297,78 +261,6 @@ paths:
                                 type: number
                               y:
                                 type: number
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/BadRequestErrorSchema"
-
-  /pages/{pageId}/edit:
-    get:
-      tags:
-        - pages
-      summary: Retrieve content for editing a specific page by ID
-      parameters:
-        - name: pageId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  page_id:
-                    type: integer
-                  content:
-                    type: string
-                    description: HTML or JSON content of the page
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/BadRequestErrorSchema"
-
-    put:
-      tags:
-        - pages
-      summary: Update content of a specific page by ID
-      parameters:
-        - name: pageId
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                content:
-                  type: string
-                  example: <h1>Updated Page Content</h1>
-      responses:
-        '200':
-          description: Page content updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  message:
-                    type: string
-                    example: Page content updated successfully.
         '400':
           description: Bad Request
           content:
@@ -455,78 +347,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UnprocessedEntityErrorSchema"
-
-  /pages/{pageId}/content:
-    get:
-      tags:
-        - pages
-      summary: Retrieve content for a specific page by ID
-      parameters:
-        - name: pageId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  page_id:
-                    type: integer
-                  content:
-                    type: string
-                    description: HTML or JSON content of the page
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/BadRequestErrorSchema"
-
-    put:
-      tags:
-        - pages
-      summary: Update content of a specific page by ID
-      parameters:
-        - name: pageId
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                content:
-                  type: string
-                  example: <h1>Updated Page Content</h1>
-      responses:
-        '200':
-          description: Page content updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  message:
-                    type: string
-                    example: Page content updated successfully.
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/BadRequestErrorSchema"
 
   /blogs/{blogId}:
     get:
@@ -1247,7 +1067,7 @@ paths:
                 $ref: "#/components/schemas/UnauthorizedErrorSchema"
 
 # organisation routes
-  /organisation:
+  /organisations:
     post:
       tags:
         - organisations
@@ -1355,7 +1175,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UnauthorizedErrorSchema"
                 
-  /organisation/{orgId}:
+  /organisations/{orgId}:
     get:
       tags:
         - organisations
@@ -1453,7 +1273,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UnauthorizedErrorSchema"
   
-  /organisation/{orgId}/users:
+  /organisations/{orgId}/users:
     post:
       tags:
         - organisations
@@ -1587,7 +1407,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UnprocessedEntityErrorSchema"
                 
-  /organisation/users/{orgId}:
+  /organisations/users/{orgId}:
     get:
       tags:
         - organisations
@@ -1643,6 +1463,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UnauthorizedErrorSchema"
 
+  #Payment paths
   /payments:
     get:
       tags:
@@ -1862,6 +1683,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServerErrorSchema'
+
   /payments/flutterwave:
     post:
       tags:
@@ -1958,7 +1780,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/ServerErrorSchema'
 
-  /notifications/{user_id}:
+  #Notifications path
+  /notifications/{userId}:
     get:
       tags:
         - notification
@@ -1968,7 +1791,7 @@ paths:
       description: Retrieves notifications based on the provided user ID.
       operationId: getNotificationsByUserId
       parameters:
-        - name: user_id
+        - name: userId
           in: path
           required: true
           schema:
@@ -2002,7 +1825,56 @@ paths:
               schema:
                 $ref: '#/components/schemas/ServerErrorSchema'
 
-  /users/{user_id}:
+  #User path
+  /users/{userId}:
+    get:
+      tags:
+        - user
+        - super admin
+      summary: Get user information
+      security:
+        - secretKeyAuth: []
+      description: Retrieves a user information.
+      operationId: getUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the user
+      responses:
+        '200':
+          description: A user information
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/UserSchema'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorSchema'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+
     put:
       tags:
         - user
@@ -2012,7 +1884,7 @@ paths:
       description: Updates the information of an existing user.
       operationId: updateUserInfo
       parameters:
-        - name: user_id
+        - name: userId
           in: path
           required: true
           schema:
@@ -2056,6 +1928,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServerErrorSchema'
+
     delete:
       tags:
         - user
@@ -2065,7 +1938,7 @@ paths:
       description: Deletes a user by their ID.
       operationId: deleteUser
       parameters:
-        - name: user_id
+        - name: userId
           in: path
           required: true
           schema:
@@ -2084,6 +1957,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorSchema'
         '400':
           description: Bad Request
           content:
@@ -2097,32 +1976,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/ServerErrorSchema'
 
-  /users/{user_id}/organizations:
+  /users/{userId}/organisations:
 
     get:
       tags:
         - user
-      summary: Query organizations where a user belongs
+        - super admin
+      summary: Query organisations where a user belongs
       security:
         - secretKeyAuth: []
-      description: Retrieves a list of organizations where the specified user belongs.
-      operationId: getUserOrganizations
+      description: Retrieves a list of organisations where the specified user belongs.
+      operationId: getUserorganisations
       parameters:
-        - name: user_id
+        - name: userId
           in: path
           required: true
           schema:
             type: integer
-          description: ID of the user to query organizations for
+          description: ID of the user to query organisations for
       responses:
         '200':
-          description: A list of organizations
+          description: A list of organisations
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Organization'
+                  $ref: '#/components/schemas/organisation'
         '401':
           description: Authentication error
           content:
@@ -2134,6 +2014,12 @@ paths:
           content:
             application/json:
               schema:
+                $ref: '#/components/schemas/NotFoundErrorSchema'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
                 $ref: '#/components/schemas/BadRequestErrorSchema'
         '500':
           description: Server error
@@ -2142,7 +2028,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ServerErrorSchema'
   
-  /users/{userId}/data:
+  /users/{userId}/dashboard:
     get:
       tags:
         - user
@@ -2182,7 +2068,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorSchema'
 
   /users/settings:
     get:
@@ -2259,9 +2152,65 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UnauthorizedErrorSchema"
+
+  /users:
+    get:
+      tags:
+        - super admin
+      summary: Get all users information
+      security:
+        - secretKeyAuth: []
+      description: Retrieves all users information.
+      operationId: getAllUsers
+      responses:
+        '200':
+          description: All user information
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserSchema'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
 components:
 
   schemas:
+
+    NotFoundErrorSchema:
+      type: object
+      properties:
+        status:
+          type: string
+          description: |-
+            The responses will contain this property with
+            - Not found error
+          example: Not Found
+        statusCode:
+          type: integer
+          description: >
+            The HTTP status code. when data cant be found
+          example: 404
+        message:
+          type: string
+          description: >
+            A basic message pointing to data doesn't exist.
 
     SuccessResponseSchema:
       type: object
@@ -2288,7 +2237,7 @@ components:
           description: |-
             The responses will contain this property with
             - Internal server error
-          example: Internal server error
+          example: Internal Server Error
         statusCode:
           type: integer
           description: >
@@ -2485,7 +2434,7 @@ components:
         user_id:
           type: integer
           example: 1
-        organization_id:
+        organisation_id:
           type: integer
           example: 2
         amount:
@@ -2683,7 +2632,7 @@ components:
         language:
           type: string
 
-    Organization:
+    organisation:
       type: object
       properties:
         id:
@@ -2691,10 +2640,10 @@ components:
           example: 1
         name:
           type: string
-          example: "Example Organization"
+          example: "Example organisation"
         description:
           type: string
-          example: "An example organization"
+          example: "An example organisation"
         created_at:
           type: string
           format: date-time
