@@ -140,6 +140,5 @@ https://www.example.com/api/v1
 
 **Endpoint:** `POST /payments/lemonsqueezy` **Description:** Create a new payment via Lemonsqueezy.
 
-
-<p align="left"><a href="">Link to API documentation</a><p>
-<p align="left"><a href="">Link to Database</a><p>
+<p align="left"><a href="" target="_blank">Link to API documentation</a><p>
+<p align="left"><a href="https://drive.google.com/file/d/1-8mI3JqCDoQGRMwzU1yFNEq5YAdPVD6r/view" target="_blank">Link to Database</a><p>
