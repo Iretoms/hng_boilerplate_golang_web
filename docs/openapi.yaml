@@ -16,8 +16,602 @@ servers:
 tags:
   - name: payment
     description: Payment operations
+  - name: auth
+    description:  API for user registration and authentication
+  - name: invite
+    description:  API for user invite management
 
+paths:
 
+  # Auth paths
+  /auth/register:
+    post:
+      tags:
+        - auth
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                  format: password
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                phone:
+                  type: string
+              required:
+                - username
+                - email
+                - password
+                - firstName
+                - lastName
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: success response
+                    example: success
+                  message:
+                    type: string
+                    example: Registered Successfully
+                  statusCode:
+                    type: integer
+                    example: 201
+                  data:
+                    $ref: "#/components/schemas/UserResponseSchema"
+
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadReqeustErrorSchema"
+                
+        '422':
+          description: Unprocessed Entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnprocessedEntityErrorSchema"
+          
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: Authenticate a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: User login successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: success response
+                    example: success
+                  statusCode:
+                    type: integer
+                    description: HTTP status Code response
+                    example: 200
+                  message:
+                    type: string
+                    example: Login Successfully
+                  data:
+                    $ref: "#/components/schemas/UserResponseSchema"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+        '422':
+          description: Unprocessed Entity
+          content:
+           application/json:
+            schema:
+                $ref: "#/components/schemas/UnprocessedEntityErrorSchema"
+  /auth/social:
+    post:
+      tags:
+        - auth
+      summary: Authenticate a user using a social provider 
+      description: the query input might change depening on the providers used
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                provider:
+                  type: string
+                token:
+                  type: string
+              required:
+                - provider
+                - token
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: success response
+                    example: success
+                  statusCode:
+                    type: integer
+                    description: HTTP status Code response
+                    example: 200
+                  message:
+                    type: string
+                    example: Authentication successful
+                  data:
+                    $ref: "#/components/schemas/UserResponseSchema"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadReqeustErrorSchema"
+
+  /auth/magic-link:
+    post:
+      tags:
+        - auth
+      summary: Request a magic link for authentication
+      description: |-
+            Uses Cases: 
+              - Sign up a new user
+              - Sign in an existing user
+              - Sign in with auto sign-up a new user if not exists
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+              required:
+                - email
+      responses:
+        '200':
+          description: Magic link sent successfully
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                message:
+                  type: string
+                  example: "Magic link sent succesfully"
+                statusCode:
+                  type: integer
+                  example: 200
+                  
+        '400':
+          description: Invalid input
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "Bad Request"
+                message:
+                  type: string
+                  example: "Email not found"
+                statusCode:
+                  type: integer
+                  example: 400
+                  
+  /auth/magic-link/verify:
+    get:
+      tags:
+        - auth
+      summary: Verify the magic link token
+      parameters:
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Token verified successfully
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                statusCode:
+                  type: integer
+                  example: 200
+                message:
+                  type: string
+                  example: "Token verified successfully"
+                data:
+                  type: object
+                  $ref: "#/components/schemas/UserResponseSchema"
+
+        '400':
+          description: Invalid token
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "Bad Request"
+                message:
+                  type: string
+                  example: "Invalid token"
+                statusCode:
+                  type: integer
+                  example: 400
+                  
+
+  /auth/password-reset:
+    post:
+      tags:
+        - auth
+      summary: Request a password reset link
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+              required:
+                - email
+      responses:
+        '200':
+          description: Password reset link sent successfully
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                message:
+                  type: string
+                  example: "Password reset link sent successfully"
+                statusCode:
+                  type: integer
+                  example: 200
+        '400':
+          description: Invalid input
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "Bad Request"
+                message:
+                  type: string
+                  example: "Invalid input"
+                statusCode:
+                  type: integer
+                  example: 400
+        '422':
+          description: Unprocessed Entity
+          content:
+           application/json:
+            schema:
+                $ref: "#/components/schemas/UnprocessedEntityErrorSchema"
+                  
+  
+  /auth/password-reset/verify:
+    post:
+      tags:
+        - auth
+      summary: Verify the password reset token and set a new password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                new_password:
+                  type: string
+              required:
+                - token
+                - new_password
+
+      responses:
+        '200':
+          description: Password reset successfully
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                message:
+                  type: string
+                  example: "Password reset successfully"
+                statusCode:
+                  type: integer
+                  example: 200
+        '400':
+          description: Invalid input
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "Bad Request"
+                message:
+                  type: string
+                  example: "Invalid input"
+                statusCode:
+                  type: integer
+                  example: 400
+        '422':
+          description: Unprocessed Entity
+          content:
+           application/json:
+            schema:
+                $ref: "#/components/schemas/UnprocessedEntityErrorSchema"
+ 
+  /auth/change-password:
+    put:
+      tags:
+        - auth
+      summary: Verify the password reset token and set a new password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                oldPassword:
+                  type: string
+                newPassword:
+                  type: string
+              required:
+                - oldPassword
+                - newPassword
+
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                message:
+                  type: string
+                  example: "Password changed successfully"
+                statusCode:
+                  type: integer
+                  example: 200
+        '400':
+          description: Invalid input
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "Bad Request"
+                message:
+                  type: string
+                  example: "Invalid input"
+                statusCode:
+                  type: integer
+                  example: 400
+        '422':
+          description: Unprocessed Entity
+          content:
+           application/json:
+            schema:
+                $ref: "#/components/schemas/UnprocessedEntityErrorSchema"
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+
+# Invites paths
+  /invite/generate:
+    post:
+      tags:
+        - invite
+      summary: Generates an invitation token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+              required:
+                - email
+      responses:
+        '200':
+          description: Token generated successfully
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                message:
+                  type: string
+                  example: "Token generated successfully"
+                token:
+                  type: string
+                  example: ab23ksdf2r
+                statusCode:
+                  type: integer
+                  example: 200
+        '400':
+          description: Invalid input
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "Bad Request"
+                message:
+                  type: string
+                  example: "Invalid input"
+                statusCode:
+                  type: integer
+                  example: 400
+        '422':
+          description: Unprocessed Entity
+          content:
+           application/json:
+            schema:
+                $ref: "#/components/schemas/UnprocessedEntityErrorSchema"
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+                
+  /invite/verify:
+    post:
+      tags:
+        - invite
+      summary: Verify token
+      parameters:
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Token verified successfully
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                message:
+                  type: string
+                  example: "Token verified successfully"
+                valid:
+                  type: boolean
+                statusCode:
+                  type: integer
+                  example: 200
+        '400':
+          description: Invalid input
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "Bad Request"
+                message:
+                  type: string
+                  example: "Invalid token"
+                statusCode:
+                  type: integer
+                  example: 400
+        '422':
+          description: Unprocessed Entity
+          content:
+           application/json:
+            schema:
+                $ref: "#/components/schemas/UnprocessedEntityErrorSchema"
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
 
 
 components:
@@ -178,6 +772,7 @@ components:
           type: string
           format: email
           
+
     UnprocessedEntity:
       type: object
       properties:
@@ -193,3 +788,4 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  
