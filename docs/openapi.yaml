@@ -1,0 +1,195 @@
+openapi: 3.0.3
+info:
+  title: User Management and Organization API
+  description: |-
+    This API provides functionalities for user management, organization management, authentication, messaging, payments, and various other services.
+    It includes features like social authentication, email notifications, payment integrations with Stripe and Flutterwave, and comprehensive user and organization management.
+  termsOfService: http://example.com/terms/
+  contact:
+    email: support@example.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: https://api.example.com/api/v1
+tags:
+  - name: payment
+    description: Payment operations
+
+
+
+
+components:
+
+  schemas:
+
+    BadRequestErrorSchema:
+      type: object
+      properties:
+        status:
+          type: string
+          description: |-
+            Certain responses will contain this property with the provided values.
+
+            Usually one of these:
+            - Bad Request
+            - invalid input
+          example: Bad Reqeust
+        statuCode:
+          type: integer
+          description: >
+            The HTTP status code. Usually missing if `error` is present.
+          example: 400
+        message:
+          type: string
+          description: >
+            A basic message describing the problem with the request. Usually missing if `error` is present.
+    
+    UnprocessedEntityErrorSchema:
+      type: object
+      properties:
+        errors:
+          type: array
+          description: >
+            contains field and corresponding error message
+          items:
+            $ref: "#/components/schemas/UnprocessedEntity"
+        statuCode:
+          type: integer
+          description: >
+            The HTTP status code. Usually missing if `error` is present.
+          example: 422
+
+    UnauthorizedErrorSchema:
+      type: object
+      properties:
+        status:
+          type: string
+          description: |-
+            Certain responses will contain this property with the provided values.
+
+            Usually one of these:
+            - Bad Request
+            - invalid input
+          example: Unauthorized
+        statuCode:
+          type: integer
+          description: >
+            The HTTP status code. Usually missing if `error` is present.
+          example: 401
+        message:
+          type: string
+          description: >
+            A basic message describing the problem with the request. Usually missing if `error` is present.
+
+    UserSchema:
+      type: object
+      description: Object describing the user related to the issued access and refresh tokens.
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+          description: firstname of the user
+        lastName:
+          type: string
+          description: lastname of the user
+        role:
+          type: string
+          description: User's role type (superadmin or user)
+        email:
+          type: string
+          description: User's primary contact email.
+        phone:
+          type: string
+          format: phone
+          description: User's primary contact phone number.
+        inviteToken:
+          type: string
+          format: token
+        inviteLink:
+          type: string
+          format: uri
+        avatarUrl:
+          type: string
+          format: uri
+        language:
+          type: string
+        region:
+          type: string
+        verified:
+          type: boolean
+          example: true
+        identities:
+          type: array
+          items:
+            $ref: "#/components/schemas/IdentitySchema"
+        created_at:
+          type: string
+          format: date-time
+          description: Time of registration
+        updated_at:
+          type: string
+          format: date-time
+          description: Last updated time
+
+    UserResponseSchema:
+      type: object
+      properties:
+            access_token:
+              type: string
+              description: A valid JWT that will expire in `expires_in` seconds.
+            refresh_token:
+              type: string
+              description: An opaque string that can be used once to obtain a new access and refresh token.
+            token_type:
+              type: string
+              description: What type of token this is. Only `bearer` returned, may change in the future.
+            expires_at:
+              type: string
+              format: date-time
+              description: UNIX timestamp after which the `access_token` should be renewed by using the refresh token with the `refresh_token` grant type.
+            user:
+              $ref: "#/components/schemas/UserSchema"
+
+
+    IdentitySchema:
+      type: object
+      properties:
+        identity_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        identity_data:
+          type: object
+        provider:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        email:
+          type: string
+          format: email
+          
+    UnprocessedEntity:
+      type: object
+      properties:
+        field:
+          type: string
+          description: Shows the field with errors.
+        message:
+          type: string
+          description: shows the error message.
+
+    securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
