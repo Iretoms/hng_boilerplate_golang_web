@@ -25,6 +25,739 @@ tags:
 
 paths:
 
+  /pages/landing:
+      get:
+        summary: Retrieve content for the landing page
+        responses:
+          '200':
+            description: Successful response
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    page_type:
+                      type: string
+                      example: landing
+                    content:
+                      type: string
+                      description: HTML or JSON content for the landing page
+          '400':
+            description: Bad Request
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/BadRequestErrorSchema"
+
+  /pages/about-us:
+    get:
+      summary: Retrieve content for the about us page
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  page_type:
+                    type: string
+                    example: about-us
+                  content:
+                    type: string
+                    description: HTML or JSON content for the about us page
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+
+  /contact:
+    post:
+      summary: Submit a contact form
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: John Doe
+                email:
+                  type: string
+                  example: john.doe@example.com
+                message:
+                  type: string
+                  example: Hello, I have an inquiry.
+      responses:
+        '200':
+          description: Message sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Your message has been sent.
+        '422':
+          description: Unprocessed Entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnprocessedEntityErrorSchema"
+
+  /contact/messages:
+    get:
+      summary: Retrieve all contact messages (Admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messages:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        email:
+                          type: string
+                        message:
+                          type: string
+                        created_at:
+                          type: string
+                          format: date-time
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+
+  /users/settings:
+    get:
+      summary: Retrieve user settings
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  settings:
+                    type: object
+                    properties:
+                      email_notifications:
+                        type: boolean
+                      profile_visibility:
+                        type: string
+                      theme:
+                        type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+
+    put:
+      summary: Update user settings
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                settings:
+                  type: object
+                  properties:
+                    email_notifications:
+                      type: boolean
+                    profile_visibility:
+                      type: string
+                      enum: [public, private]
+                    theme:
+                      type: string
+                      enum: [dark, light]
+      responses:
+        '200':
+          description: Settings updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Settings updated successfully.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+
+  /dashboard:
+    get:
+      summary: Retrieve general dashboard data
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recent_activities:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        activity_type:
+                          type: string
+                          example: login
+                        timestamp:
+                          type: string
+                          format: date-time
+                  statistics:
+                    type: object
+                    properties:
+                      total_users:
+                        type: integer
+                        example: 100
+                      total_payments:
+                        type: number
+                        format: float
+                        example: 2000.50
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+
+  /users/{userId}/data:
+    get:
+      summary: Retrieve user-specific data for the dashboard
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        data_id:
+                          type: integer
+                        data_type:
+                          type: string
+                        data_content:
+                          type: object
+                        created_at:
+                          type: string
+                          format: date-time
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+
+  /waitlist:
+    post:
+      summary: Add a user to the waitlist
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: john.doe@example.com
+                interest_area:
+                  type: string
+                  example: loan
+      responses:
+        '200':
+          description: User added to the waitlist
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: You have been added to the waitlist.
+        '422':
+          description: Unprocessed Entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnprocessedEntityErrorSchema"
+
+    get:
+      summary: Retrieve the waitlist (Admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  waitlist:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        email:
+                          type: string
+                        interest_area:
+                          type: string
+                        created_at:
+                          type: string
+                          format: date-time
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+
+  /pages/marketing:
+    get:
+      summary: Retrieve content for the marketing page
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  page_type:
+                    type: string
+                    example: marketing
+                  content:
+                    type: string
+                    description: HTML or JSON content for the marketing page
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+
+    post:
+      summary: Update marketing page content (Admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  example: <h1>Marketing Content</h1>
+      responses:
+        '200':
+          description: Marketing page updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Marketing page updated successfully.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+
+  /data/charts:
+    get:
+      summary: Retrieve data for charts
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  charts:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        chart_id:
+                          type: integer
+                        chart_type:
+                          type: string
+                          example: line
+                        data:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              x:
+                                type: number
+                              y:
+                                type: number
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+
+  /pages/{pageId}/edit:
+    get:
+      summary: Retrieve content for editing a specific page by ID
+      parameters:
+        - name: pageId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  page_id:
+                    type: integer
+                  content:
+                    type: string
+                    description: HTML or JSON content of the page
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+
+    put:
+      summary: Update content of a specific page by ID
+      parameters:
+        - name: pageId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  example: <h1>Updated Page Content</h1>
+      responses:
+        '200':
+          description: Page content updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Page content updated successfully.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+
+  /blogs:
+    get:
+      summary: Retrieve a list of blog posts
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  blogs:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        blog_id:
+                          type: integer
+                        title:
+                          type: string
+                        excerpt:
+                          type: string
+                        author_id:
+                          type: integer
+                        created_at:
+                          type: string
+                          format: date-time
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+
+    post:
+      summary: Create a new blog post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: New Blog Post
+                content:
+                  type: string
+                  example: This is the content of the new blog post
+      responses:
+        '200':
+          description: Blog post created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Blog post created successfully.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+        '422':
+          description: Unprocessed Entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnprocessedEntityErrorSchema"
+
+  /pages/{pageId}/content:
+    get:
+      summary: Retrieve content for a specific page by ID
+      parameters:
+        - name: pageId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  page_id:
+                    type: integer
+                  content:
+                    type: string
+                    description: HTML or JSON content of the page
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+
+    put:
+      summary: Update content of a specific page by ID
+      parameters:
+        - name: pageId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  example: <h1>Updated Page Content</h1>
+      responses:
+        '200':
+          description: Page content updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Page content updated successfully.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+
+  /blogs/{blogId}:
+    get:
+      summary: Retrieve details of a specific blog post
+      parameters:
+        - name: blogId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  blog_id:
+                    type: integer
+                  title:
+                    type: string
+                  content:
+                    type: string
+                  author_id:
+                    type: integer
+                  created_at:
+                    type: string
+                    format: date-time
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+        
+
+    put:
+      summary: Update details of a specific blog post
+      parameters:
+        - name: blogId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Updated Blog Title
+                content:
+                  type: string
+                  example: Updated blog content
+      responses:
+        '200':
+          description: Blog post updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Blog post updated successfully.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+
   # Auth paths
   /auth/register:
     post:
