@@ -16,10 +16,8 @@ servers:
 tags:
   - name: payment
     description: Payment operations
-  
   - name: auth
     description:  API for user registration and authentication
-  
   - name: invite
     description:  API for user invite management
 
