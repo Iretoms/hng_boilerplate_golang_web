@@ -1468,6 +1468,7 @@ paths:
     get:
       tags:
         - payment
+        - super admin
       summary: List all payments
       security:
         - bearerAuth: []
@@ -1545,6 +1546,7 @@ paths:
     get:
       tags:
         - payment
+        - super admin
       summary: Get payment by ID
       security:
         - bearerAuth: []
@@ -1585,6 +1587,7 @@ paths:
     put:
       tags:
         - payment
+        - super admin
       summary: Update an existing payment
       security:
         - bearerAuth: []
@@ -1878,6 +1881,7 @@ paths:
     put:
       tags:
         - user
+        - super admin
       summary: Update user info
       security:
         - secretKeyAuth: []
@@ -1932,6 +1936,7 @@ paths:
     delete:
       tags:
         - user
+        - super admin
       summary: Delete a user
       security:
         - secretKeyAuth: []
@@ -2002,7 +2007,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/organisation'
+                  $ref: '#/components/schemas/Organisation'
         '401':
           description: Authentication error
           content:
@@ -2346,6 +2351,13 @@ components:
         verified:
           type: boolean
           example: true
+        suspended:
+          type: boolean
+          example: true
+        suspended_at:
+          type: string
+          format: date-time
+          description: Time of suspension
         identities:
           type: array
           items:
@@ -2632,7 +2644,7 @@ components:
         language:
           type: string
 
-    organisation:
+    Organisation:
       type: object
       properties:
         id:
