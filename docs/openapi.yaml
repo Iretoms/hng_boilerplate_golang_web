@@ -20,6 +20,8 @@ tags:
     description:  API for user registration and authentication
   - name: invite
     description:  API for user invite management
+  - name: organisations
+    description:  API for organisation management
 
 paths:
 
@@ -81,7 +83,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BadReqeustErrorSchema"
+                $ref: "#/components/schemas/BadRequestErrorSchema"
                 
         '422':
           description: Unprocessed Entity
@@ -194,7 +196,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BadReqeustErrorSchema"
+                $ref: "#/components/schemas/BadRequestErrorSchema"
 
   /auth/magic-link:
     post:
@@ -281,7 +283,6 @@ paths:
                   type: string
                   example: "Token verified successfully"
                 data:
-                  type: object
                   $ref: "#/components/schemas/UserResponseSchema"
 
         '400':
@@ -612,6 +613,430 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UnauthorizedErrorSchema"
+  
+  /invite/status:
+     post:
+      tags:
+        - invite
+      summary: Verify token
+      parameters:
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Get the current status of the invite
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                state:
+                  type: string
+                  example: "pending"
+                  description: gives the current status of the invite
+                valid:
+                  type: boolean
+                statusCode:
+                  type: integer
+                  example: 200
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+
+# organisation routes
+  /organisation:
+    post:
+      tags:
+        - organisations
+      summary: Register a new organisation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+              required:
+                - name
+      responses:
+        '201':
+          description: Organisation registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: success response
+                    example: success
+                  message:
+                    type: string
+                    example: Registered Successfully
+                  statusCode:
+                    type: integer
+                    example: 201
+                  data:
+                    $ref: "#/components/schemas/OrganisationResponseSchema"
+
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+                
+        '422':
+          description: Unprocessed Entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnprocessedEntityErrorSchema"
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+                
+                
+    get:
+      tags:
+        - organisations
+      summary: Get all organisation
+      responses:
+        '200':
+          description: Organisations fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: success response
+                    example: success
+                  message:
+                    type: string
+                    example: Request Successfully
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    description: > 
+                      contains list of returned organisations
+                    items:
+                      $ref: "#/components/schemas/OrganisationResponseSchema"
+
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+                
+  /organisation/{orgId}:
+    get:
+      tags:
+        - organisations
+      summary: Get an organisation by id
+      
+      parameters:
+        - in: path
+          name: orgId
+          schema:
+            type: string
+            format: uuid
+          required: true
+  
+      responses:
+        '200':
+          description: Organisation fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: success response
+                    example: success
+                  message:
+                    type: string
+                    example: Request Successfully
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    $ref: "#/components/schemas/OrganisationResponseSchema"
+
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+                
+    delete:
+      tags:
+        - organisations
+      summary: Delete an organisation by id
+      
+      parameters:
+        - in: path
+          name: orgId
+          schema:
+            type: string
+            format: uuid
+          required: true
+      
+      responses:
+        '200':
+          description: Organisations deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: success response
+                    example: success
+                  message:
+                    type: string
+                    example: Deleted Successfully
+                  statusCode:
+                    type: integer
+                    example: 200
+
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+  
+  /organisation/{orgId}/users:
+    post:
+      tags:
+        - organisations
+      summary: Add a user to an organisation by id
+      parameters:
+        - in: path
+          name: orgId
+          schema:
+            type: string
+            format: uuid
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  format: uuid
+              required:
+                - userId
+        
+      responses:
+        '201':
+          description: User added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: success response
+                    example: success
+                  message:
+                    type: string
+                    example: User added successfully
+                  statusCode:
+                    type: integer
+                    example: 201
+
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+  
+        '422':
+          description: Unprocessed Entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnprocessedEntityErrorSchema"
+                
+    put:
+      tags:
+        - organisations
+      summary: Delete a user from an organisation
+      parameters:
+        - in: path
+          name: orgId
+          schema:
+            type: string
+            format: uuid
+          required: true
+  
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  format: uuid
+              required:
+                - userId
+        
+      responses:
+        '200':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: success response
+                    example: success
+                  message:
+                    type: string
+                    example: User deleted successfully
+                  statusCode:
+                    type: integer
+                    example: 200
+
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+  
+        '422':
+          description: Unprocessed Entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnprocessedEntityErrorSchema"
+                
+  /organisation/users/{orgId}:
+    get:
+      tags:
+        - organisations
+      summary: Get users in an organisation
+      parameters:
+        - in: path
+          name: orgId
+          schema:
+            type: string
+            format: uuid
+          required: true
+
+      responses:
+        '200':
+          description: Users fetched successfully
+          content:
+            application/json:
+              schema:
+               type: object
+               properties:
+                  status:
+                    type: string
+                    description: success response
+                    example: success
+                  message:
+                    type: string
+                    example: Users fetched successfully
+                  data:
+                    type: array
+                    items:
+                      properties:
+                        userId:
+                          type: string
+                          format: uuid
+                      
+                  statusCode:
+                    type: integer
+                    example: 200
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorSchema"
+
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
 
 
 components:
@@ -681,7 +1106,7 @@ components:
       type: object
       description: Object describing the user related to the issued access and refresh tokens.
       properties:
-        id:
+        user_id:
           type: string
           format: uuid
         firstName:
@@ -771,7 +1196,6 @@ components:
         email:
           type: string
           format: email
-          
 
     UnprocessedEntity:
       type: object
@@ -783,9 +1207,27 @@ components:
           type: string
           description: shows the error message.
 
-    securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+    OrganisationResponseSchema:
+      type: object
+      description: Object describing the organisation data
+      properties:
+        organisation_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          description: organisation name
+        description: 
+          type: string
+          description: organisation description
+
+  securitySchemes:
+      bearerAuth:
+        type: http
+        scheme: bearer
+        bearerFormat: JWT
+      secretKeyAuth:
+        type: apiKey
+        in: header
+        name: Authorization
   
