@@ -47,6 +47,7 @@ paths:
                   type: string
                 password:
                   type: string
+                  format: password
                 firstName:
                   type: string
                 lastName:
@@ -580,10 +581,17 @@ components:
           format: token
         inviteLink:
           type: string
-          format: url
+          format: uri
         avatarUrl:
           type: string
-          format: url
+          format: uri
+        language:
+          type: string
+        region:
+          type: string
+        verified:
+          type: boolean
+          example: true
         identities:
           type: array
           items:
@@ -649,23 +657,4 @@ components:
         message:
           type: string
           description: shows the error message.
-
-  securitySchemes:
-
-    api_key:
-      type: apiKey
-      name: api_key
-      in: header
-      
-    UserAuth:
-        type: http
-        scheme: bearer
-        description: >
-          An access token in the form of a JWT issued by this server.
-
-    AdminAuth:
-      type: http
-      scheme: bearer
-      description: >
-        A special admin JWT.
-        
+  
