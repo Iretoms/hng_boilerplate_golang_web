@@ -1,0 +1,832 @@
+openapi: 3.0.3
+info:
+  title: User Management and Organization API
+  description: |-
+    This API provides functionalities for user management, organization management, authentication, messaging, payments, and various other services.
+    It includes features like social authentication, email notifications, payment integrations with Stripe and Flutterwave, and comprehensive user and organization management.
+  termsOfService: http://example.com/terms/
+  contact:
+    email: support@example.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: https://api.example.com/api/v1
+tags:
+  - name: payment
+    description: Payment operations
+  - name: contact us
+    description: Contact us operations
+  - name: notification
+    description: Notification operations
+
+paths:
+  /payments:
+    get:
+      tags:
+        - payment
+      summary: List all payments
+      security:
+        - bearerAuth: []
+      description: Retrieves a list of all payments.
+      operationId: listPayments
+      responses:
+        '200':
+          description: A list of payments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+    post:
+      tags:
+        - payment
+      summary: Create a new payment
+      security:
+        - bearerAuth: []
+      description: Creates a new payment record.
+      operationId: createPayment
+      requestBody:
+        description: Payment details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPayment'
+        required: true
+      responses:
+        '201':
+          description: Payment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessedEntityErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+
+  /payments/{paymentId}:
+    get:
+      tags:
+        - payment
+      summary: Get payment by ID
+      security:
+        - bearerAuth: []
+      description: Retrieves a payment by its ID.
+      operationId: getPaymentById
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the payment to retrieve
+      responses:
+        '200':
+          description: Payment details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+    put:
+      tags:
+        - payment
+      summary: Update an existing payment
+      security:
+        - bearerAuth: []
+      description: Updates the details of an existing payment by its ID.
+      operationId: updatePayment
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the payment to update
+      requestBody:
+        description: Updated payment details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePayment'
+        required: true
+      responses:
+        '200':
+          description: Payment updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessedEntityErrorSchema'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+
+  /payments/stripe:
+    post:
+      tags:
+        - payment
+      summary: Create a new payment via Stripe
+      security:
+        - secretKeyAuth: []
+      description: Creates a new payment record via Stripe.
+      operationId: createStripePayment
+      requestBody:
+        description: Stripe payment details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StripePayment'
+        required: true
+      responses:
+        '201':
+          description: Stripe payment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessedEntityErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+  /payments/flutterwave:
+    post:
+      tags:
+        - payment
+      summary: Create a new payment via Flutterwave
+      security:
+        - secretKeyAuth: []
+      description: Creates a new payment record via Flutterwave.
+      operationId: createFlutterwavePayment
+      requestBody:
+        description: Flutterwave payment details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlutterwavePayment'
+        required: true
+      responses:
+        '201':
+          description: Flutterwave payment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessedEntityErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+
+  /payments/lemonsqueezy:
+    post:
+      tags:
+        - payment
+      summary: Create a new payment via LemonSqueezy
+      security:
+        - secretKeyAuth: []
+      description: Creates a new payment record via LemonSqueezy.
+      operationId: createLemonSqueezyPayment
+      requestBody:
+        description: LemonSqueezy payment details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LemonSqueezyPayment'
+        required: true
+      responses:
+        '201':
+          description: LemonSqueezy payment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessedEntityErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+
+  /contact:
+    post:
+      tags:
+        - contact us
+      summary: Submit a contact us form
+      description: Allows users to send a contact us message.
+      operationId: submitContactForm
+      requestBody:
+        description: Contact form details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactForm'
+        required: true
+      responses:
+        '201':
+          description: Contact form submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseSchema'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessedEntityErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+
+  /notifications/{user_id}:
+    get:
+      tags:
+        - notification
+      summary: Get notifications by user ID
+      description: Retrieves notifications based on the provided user ID.
+      operationId: getNotificationsByUserId
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the user to retrieve notifications for
+      responses:
+        '200':
+          description: A list of notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+        '400':
+          description: No notifications found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+
+components:
+  schemas:
+
+    SuccessResponseSchema:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        statusCode:
+          type: integer
+          description: >
+            The HTTP status code. Usually 200 , 201 etc
+          example: 201
+        message:
+          type: string
+          description: >
+            A basic message describing a request was processed successfully.
+            example: "Successfully"
+
+    BadRequestErrorSchema:
+      type: object
+      properties:
+        status:
+          type: string
+          description: |-
+            Certain responses will contain this property with the provided values.
+
+            Usually one of these:
+            - Bad Request
+            - invalid input
+          example: Bad Reqeust
+        statusCode:
+          type: integer
+          description: >
+            The HTTP status code. Usually missing if `error` is present.
+          example: 400
+        message:
+          type: string
+          description: >
+            A basic message describing the problem with the request. Usually missing if `error` is present.
+    
+    ServerErrorSchema:
+      type: object
+      properties:
+        status:
+          type: string
+          description: |-
+            The responses will contain this property with
+            - Internal server error
+          example: Internal server error
+        statusCode:
+          type: integer
+          description: >
+            The HTTP status code. Usually missing if `error` is present.
+          example: 500
+        message:
+          type: string
+          description: >
+            A basic message describing the problem from the server.
+
+    UnprocessedEntityErrorSchema:
+      type: object
+      properties:
+        errors:
+          type: array
+          description: >
+            contains field and corresponding error message
+          items:
+            $ref: "#/components/schemas/UnprocessedEntity"
+        statuCode:
+          type: integer
+          description: >
+            The HTTP status code. Usually missing if `error` is present.
+          example: 422
+
+    UnauthorizedErrorSchema:
+      type: object
+      properties:
+        status:
+          type: string
+          description: |-
+            Certain responses will contain this property with the provided values.
+
+            Usually one of these:
+            - Bad Request
+            - invalid input
+          example: Unauthorized
+        statuCode:
+          type: integer
+          description: >
+            The HTTP status code. Usually missing if `error` is present.
+          example: 401
+        message:
+          type: string
+          description: >
+            A basic message describing the problem with the request. Usually missing if `error` is present.
+
+    UserSchema:
+      type: object
+      description: Object describing the user related to the issued access and refresh tokens.
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+          description: firstname of the user
+        lastName:
+          type: string
+          description: lastname of the user
+        role:
+          type: string
+          description: User's role type (superadmin or user)
+        email:
+          type: string
+          description: User's primary contact email.
+        phone:
+          type: string
+          format: phone
+          description: User's primary contact phone number.
+        inviteToken:
+          type: string
+          format: token
+        inviteLink:
+          type: string
+          format: uri
+        avatarUrl:
+          type: string
+          format: uri
+        language:
+          type: string
+        region:
+          type: string
+        verified:
+          type: boolean
+          example: true
+        identities:
+          type: array
+          items:
+            $ref: "#/components/schemas/IdentitySchema"
+        created_at:
+          type: string
+          format: date-time
+          description: Time of registration
+        updated_at:
+          type: string
+          format: date-time
+          description: Last updated time
+
+    UserResponseSchema:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: A valid JWT that will expire in `expires_in` seconds.
+        refresh_token:
+          type: string
+          description: An opaque string that can be used once to obtain a new access and refresh token.
+        token_type:
+          type: string
+          description: What type of token this is. Only `bearer` returned, may change in the future.
+        expires_at:
+          type: string
+          format: date-time
+          description: UNIX timestamp after which the `access_token` should be renewed by using the refresh token with the `refresh_token` grant type.
+        user:
+          $ref: "#/components/schemas/UserSchema"
+
+    IdentitySchema:
+      type: object
+      properties:
+        identity_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        identity_data:
+          type: object
+        provider:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        email:
+          type: string
+          format: email
+          
+    UnprocessedEntity:
+      type: object
+      properties:
+        field:
+          type: string
+          description: Shows the field with errors.
+        message:
+          type: string
+          description: shows the error message.
+
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        organization_id:
+          type: integer
+          example: 2
+        amount:
+          type: number
+          format: float
+          example: 50.00
+        currency:
+          type: string
+          example: "NGN"
+        provider:
+          type: string
+          example: "flutterwave"
+        transaction_id:
+          type: string
+          example: "txn_01"
+        provider_transaction_id:
+          type: string
+          example: "flu_txn_02"
+        status:
+          type: integer
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    NewPayment:
+      type: object
+      required:
+        - user_id
+        - amount
+        - currency
+        - payment_method
+        - provider
+        - transaction_id
+        - provider_transaction_id
+      properties:
+        user_id:
+          type: integer
+          example: 1
+        amount:
+          type: number
+          format: float
+          example: 50.00
+        currency:
+          type: string
+          example: "NGN"
+        provider:
+          type: string
+          example: "flutterwave"
+          enum:
+            - "flutterwave"
+            - "stripe"
+            - "lemonsqueezy"
+        transaction_id:
+          type: string
+          example: "txn_01"
+        provider_transaction_id:
+          type: string
+          example: "flu_txn_02"
+        status:
+          type: integer
+          example: 1
+    UpdatePayment:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 1
+    StripePayment:
+      type: object
+      required:
+        - user_id
+        - amount
+        - email
+        - card_number
+        - expiry
+        - cvv
+      properties:
+        user_id:
+          type: integer
+          example: 1
+        amount:
+          type: number
+          format: float
+          example: 50.00
+        email:
+          type: string
+          example: "example@gmail.com"
+        card_number:
+          type: string
+          example: "5678 8992 9900 9292"
+        expiry:
+          type: string
+          example: "10/27"
+        cvv:
+          type: integer
+          example: 672
+        description:
+          type: string
+          example: "Payment for service X"
+    FlutterwavePayment:
+      type: object
+      required:
+        - user_id
+        - amount
+        - email
+        - currency
+      properties:
+        user_id:
+          type: integer
+          example: 1
+        amount:
+          type: number
+          format: float
+          example: 50.00
+        email:
+          type: string
+          example: "example@gmail.com"
+        currency:
+          type: string
+          example: "NGN"
+        description:
+          type: string
+          example: "Payment for service Y"
+    LemonSqueezyPayment:
+      type: object
+      required:
+        - user_id
+        - email
+        - amount
+        - currency
+      properties:
+        user_id:
+          type: integer
+          example: 1
+        amount:
+          type: number
+          format: float
+          example: 50.00
+        email:
+          type: string
+          example: "example@gmail.com"
+        currency:
+          type: string
+          example: "NGN"
+        description:
+          type: string
+          example: "Payment for service Z"
+    ContactForm:
+      type: object
+      required:
+        - name
+        - email
+        - subject
+        - message
+      properties:
+        name:
+          type: string
+          example: "John Doe"
+        email:
+          type: string
+          format: email
+          example: "john.doe@example.com"
+        subject:
+          type: string
+          example: "Inquiry about services"
+        message:
+          type: string
+          example: "I would like to know more about your services."
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: "New Feature Update"
+        message:
+          type: string
+          example: "We have updated our platform with new features."
+        user_id:
+          type: integer
+          example: 123
+        read:
+          type: boolean
+          example: false
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    secretKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
