@@ -8,9 +8,9 @@ This document provides an overview of the API endpoints available in the system,
 
 https://www.example.com/api/v1
 
+## Authentication
 
-## Authentication 
- **Description:** Endpoints for user registration and authentication.
+**Description:** Endpoints for user registration and authentication.
 
 **Endpoint:** `POST /auth/register` **Description:** Register a new user.
 
@@ -28,105 +28,118 @@ https://www.example.com/api/v1
 
 **Endpoint:** `PUT /auth/change-password` **Description:** Verify the password reset token and set a new password.
 
-
 ## User
- **Description:** User related operations.
 
- **Endpoint:** `GET /users` **Description:** Get all users.
+**Description:** User related operations.
 
- **Endpoint:** `GET /users/{userId}` **Description:** Get single user.
+**Endpoint:** `GET /users` **Description:** Get all users.
 
- **Endpoint:** `PUT /users/{userid}` **Description:** Update single user.
+**Endpoint:** `GET /users/{userId}` **Description:** Get single user.
 
- **Endpoint:** `DELETE /users/{userId}` **Description:** Delete single user.
+**Endpoint:** `PUT /users/{userid}` **Description:** Update single user.
 
- **Endpoint:** `GET /users/{userId}/organisation` **Description:** Query organisations where a user belongs.
+**Endpoint:** `DELETE /users/{userId}` **Description:** Delete single user.
 
- **Endpoint:** `GET /users/{userId}/data` **Description:** Retrieve user-specific data for the dashboard.
+**Endpoint:** `GET /users/{userId}/organisation` **Description:** Query organisations where a user belongs.
 
- **Endpoint:** `GET /users/settings` **Description:** Retrieve user settings.
+**Endpoint:** `GET /users/{userId}/data` **Description:** Retrieve user-specific data for the dashboard.
 
- **Endpoint:** `UPDATE /users/settings` **Description:** Update user settings.
+**Endpoint:** `GET /users/settings` **Description:** Retrieve user settings.
 
+**Endpoint:** `UPDATE /users/settings` **Description:** Update user settings.
 
- ## Organisation
- **Description:** Organisation related operations.
+## Organisation
 
- **Endpoint:** `GET /organisations` **Description:** Get all users.
+**Description:** Organisation related operations.
 
- **Endpoint:** `POST /organisation` **Description:** Register a new organisation.
+**Endpoint:** `GET /organisations` **Description:** Get all users.
 
- **Endpoint:** `GET /organisations` **Description:** Get all organisation.
+**Endpoint:** `POST /organisation` **Description:** Register a new organisation.
 
- **Endpoint:** `GET /organisations/{orgId}` **Description:** Get an organisation by Id.
+**Endpoint:** `GET /organisations` **Description:** Get all organisation.
 
- **Endpoint:** `DELETE /organisations/{orgId}` **Description:** Delete an organisation by id.
+**Endpoint:** `GET /organisations/{orgId}` **Description:** Get an organisation by Id.
 
- **Endpoint:** `POST /organisations/{orgId}/users` **Description:** Add a user to an organisation by id.
+**Endpoint:** `DELETE /organisations/{orgId}` **Description:** Delete an organisation by id.
 
- **Endpoint:** `PUT /organisations/{orgId}/users` **Description:** Delete a user from an organisation.
+**Endpoint:** `POST /organisations/{orgId}/users` **Description:** Add a user to an organisation by id.
 
- **Endpoint:** `GET /organisations/{orgId}/users` **Description:** Get users in an organisation.
+**Endpoint:** `PUT /organisations/{orgId}/users` **Description:** Delete a user from an organisation.
 
+**Endpoint:** `GET /organisations/{orgId}/users` **Description:** Get users in an organisation.
 
- ## Super Admin
- **Description:** Superadmin operations.
+## Super Admin
 
-  **Endpoint:** `GET /users/{userId}` **Description:** Get single user.
+**Description:** Superadmin operations.
 
-  **Endpoint:** `GET /users/{userId}/organisation` **Description:** Query organisations where a user belongs.
+**Endpoint:** `GET /users/{userId}` **Description:** Get single user.
 
-   **Endpoint:** `GET /users` **Description:** Get all users.
+**Endpoint:** `PUT /users/{userId}` **Description:** Update user info.
 
+**Endpoint:** `DELETE /users/{userId}` **Description:** Delete a user.
+
+**Endpoint:** `GET /users/{userId}/organisation` **Description:** Query organisations where a user belongs.
+
+**Endpoint:** `GET /users` **Description:** Get all users.
+
+**Endpoint:** `GET /payment` **Description:** List all payments.
+
+**Endpoint:** `GET /payments/{paymentId}` **Description:** Get payment by ID.
+
+**Endpoint:** `PUT /payments/{paymentId}` **Description:** Update an existing payment.
 
 ## Invite
- **Description:** API for user invite management.
 
- **Endpoint:** `POST /invite/generate` **Description:** Generates an invitation token.
+**Description:** API for user invite management.
 
- **Endpoint:** `POST /invite/verify` **Description:** Verify.
+**Endpoint:** `POST /invite/generate` **Description:** Generates an invitation token.
 
+**Endpoint:** `POST /invite/verify` **Description:** Verify.
 
- ## Notifications
- **Description:** Notification operations.
+## Notifications
 
- **Endpoint:** `POST /notifications/{user_id}` **Description:** Get notifications by user Id.
+**Description:** Notification operations.
 
+**Endpoint:** `POST /notifications/{user_id}` **Description:** Get notifications by user Id.
 
 ## Pages
- **Description:** Pages available.
 
- **Endpoint:** `POST /contact` **Description:** Submit a contact form.
+**Description:** Pages available.
 
- **Endpoint:** `GET /contacts/messages` **Description:** Retrieve all contact messages (Admin only).
+**Endpoint:** `POST /contact` **Description:** Submit a contact form.
 
- **Endpoint:** `POST /waitlist` **Description:** Add a user to the waitlist.
+**Endpoint:** `GET /contacts/messages` **Description:** Retrieve all contact messages (Admin only).
 
- **Endpoint:** `GET /waitlist` **Description:** Retrieve the waitlist (Admin only).
+**Endpoint:** `POST /waitlist` **Description:** Add a user to the waitlist.
 
- **Endpoint:** `POST /pages/marketing` **Description:** Update marketing page content (Admin only).
+**Endpoint:** `GET /waitlist` **Description:** Retrieve the waitlist (Admin only).
 
- **Endpoint:** `POST /data/charts` **Description:** Retrieve data for charts.
+**Endpoint:** `POST /pages/marketing` **Description:** Update marketing page content (Admin only).
 
- **Endpoint:** `GET /blogs` **Description:** Retrieve a list of blog posts.
+**Endpoint:** `POST /data/charts` **Description:** Retrieve data for charts.
 
- **Endpoint:** `GET /blogs` **Description:** Retrieve a list of blog posts.
+**Endpoint:** `GET /blogs` **Description:** Retrieve a list of blog posts.
+
+**Endpoint:** `GET /blogs` **Description:** Retrieve a list of blog posts.
+
+## Payment
+
+**Description:** Payment operations.
+
+**Endpoint:** `GET /payments` **Description:** List all payments.
+
+**Endpoint:** `POST /payments` **Description:** Create a new payment.
+
+**Endpoint:** `GET /payments/{paymentID}` **Description:** Get payment by ID.
+
+**Endpoint:** `PUT /payments/{paymentID}` **Description:** Update an existing payment.
+
+**Endpoint:** `POST /payments/stripe` **Description:** Create a new payment via Stripe.
+
+**Endpoint:** `POST /payments/flutterwave` **Description:** Create a new payment via Flutterwave.
+
+**Endpoint:** `POST /payments/lemonsqueezy` **Description:** Create a new payment via Lemonsqueezy.
 
 
- ## Payment
- **Description:** Payment operations.
-
- **Endpoint:** `GET /payments` **Description:** List all payments.
-
- **Endpoint:** `POST /payments` **Description:** Create a new payment.
-
- **Endpoint:** `GET /payments/{paymentID}` **Description:** Get payment by ID.
-
- **Endpoint:** `PUT /payments/{paymentID}` **Description:** Update an existing payment.
-
- **Endpoint:** `POST /payments/stripe` **Description:** Create a new payment via Stripe.
-
- **Endpoint:** `POST /payments/flutterwave` **Description:** Create a new payment via Flutterwave.
-
- **Endpoint:** `POST /payments/lemonsqueezy` **Description:** Create a new payment via Lemonsqueezy.
-
+<p align="left"><a href="">Link to API documentation</a><p>
+<p align="left"><a href="">Link to Database</a><p>
