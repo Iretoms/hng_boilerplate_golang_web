@@ -2481,7 +2481,6 @@ components:
         - user_id
         - amount
         - currency
-        - payment_method
         - provider
         - transaction_id
         - provider_transaction_id
