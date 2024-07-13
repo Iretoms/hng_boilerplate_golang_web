@@ -1,32 +1,24 @@
 openapi: 3.0.3
 info:
-  title: Swagger  - OpenAPI 3.0
+  title: User Management and Organization API
   description: |-
-  
-  termsOfService: http://swagger.io/terms/
+    This API provides functionalities for user management, organization management, authentication, messaging, payments, and various other services.
+    It includes features like social authentication, email notifications, payment integrations with Stripe and Flutterwave, and comprehensive user and organization management.
+  termsOfService: http://example.com/terms/
   contact:
-    email: apiteam@swagger.io
-
+    email: support@example.com
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.11
-
-externalDocs:
-  description: Find out more about Swagger
-  url: http://swagger.io
+  version: 1.0.0
 servers:
-  - url: https://petstore3.swagger.io/api/v3
-  
-
+  - url: https://api.example.com/api/v1
 tags:
+  - name: payment
+    description: Payment operations
+  
   - name: auth
     description:  API for user registration and authentication
-    externalDocs:
-      description: External link to the repo here
-      url: https://github.com/ # url to the readme here
-  
-  #- use the above format to define more routes
 
 paths:
   /auth/register:
@@ -490,11 +482,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UnauthorizedErrorSchema"
+
+
 components:
 
   schemas:
 
-    BadReqeustErrorSchema:
+    BadRequestErrorSchema:
       type: object
       properties:
         status:
@@ -648,6 +642,7 @@ components:
           type: string
           format: email
           
+
     UnprocessedEntity:
       type: object
       properties:
@@ -657,4 +652,10 @@ components:
         message:
           type: string
           description: shows the error message.
+
+    securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   
