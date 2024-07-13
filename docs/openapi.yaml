@@ -22,11 +22,15 @@ tags:
     description:  API for user invite management
   - name: notification
     description: Notification operations
+  - name: pages
+    description: Pages available
 
 paths:
 
   /pages/landing:
       get:
+        tags:
+          - auth
         summary: Retrieve content for the landing page
         responses:
           '200':
