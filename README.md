@@ -1,5 +1,8 @@
 # API Documentation
 
+## docs/openapi.yaml
+**Description:** Location of yaml file above.
+
 ## Overview
 
 This document provides an overview of the API endpoints available in the system, including authentication, user management, payments, and more.
@@ -140,5 +143,8 @@ https://www.example.com/api/v1
 
 **Endpoint:** `POST /payments/lemonsqueezy` **Description:** Create a new payment via Lemonsqueezy.
 
-<p align="left"><a href="" target="_blank">Link to API documentation</a><p>
-<p align="left"><a href="https://drive.google.com/file/d/1-8mI3JqCDoQGRMwzU1yFNEq5YAdPVD6r/view" target="_blank">Link to Database</a><p>
+<p align="left"><a href="https://hng-task-three-pt7rk.ondigitalocean.app/" target="_blank">Link to HTML version API documentation</a><p>
+
+<p align="left"><a href="https://app.swaggerhub.com/apis/HARYORTORLARH/hng-task3/1.0.0" target="_blank">Link to swagger version API documentation</a><p>
+
+<p align="left"><a href="https://drive.google.com/file/d/1-8mI3JqCDoQGRMwzU1yFNEq5YAdPVD6r/view" target="_blank">Link to Database Image</a><p>
