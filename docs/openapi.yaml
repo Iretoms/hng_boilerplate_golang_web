@@ -19,8 +19,13 @@ tags:
   
   - name: auth
     description:  API for user registration and authentication
+  
+  - name: invite
+    description:  API for user invite management
 
 paths:
+
+  # Auth paths
   /auth/register:
     post:
       tags:
@@ -417,7 +422,7 @@ paths:
                 $ref: "#/components/schemas/UnprocessedEntityErrorSchema"
  
   /auth/change-password:
-    post:
+    put:
       tags:
         - auth
       summary: Verify the password reset token and set a new password
@@ -466,6 +471,133 @@ paths:
                 message:
                   type: string
                   example: "Invalid input"
+                statusCode:
+                  type: integer
+                  example: 400
+        '422':
+          description: Unprocessed Entity
+          content:
+           application/json:
+            schema:
+                $ref: "#/components/schemas/UnprocessedEntityErrorSchema"
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+
+# Invites paths
+  /invite/generate:
+    post:
+      tags:
+        - invite
+      summary: Generates an invitation token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+              required:
+                - email
+      responses:
+        '200':
+          description: Token generated successfully
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                message:
+                  type: string
+                  example: "Token generated successfully"
+                token:
+                  type: string
+                  example: ab23ksdf2r
+                statusCode:
+                  type: integer
+                  example: 200
+        '400':
+          description: Invalid input
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "Bad Request"
+                message:
+                  type: string
+                  example: "Invalid input"
+                statusCode:
+                  type: integer
+                  example: 400
+        '422':
+          description: Unprocessed Entity
+          content:
+           application/json:
+            schema:
+                $ref: "#/components/schemas/UnprocessedEntityErrorSchema"
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedErrorSchema"
+                
+  /invite/verify:
+    post:
+      tags:
+        - invite
+      summary: Verify token
+      parameters:
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Token verified successfully
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                message:
+                  type: string
+                  example: "Token verified successfully"
+                valid:
+                  type: boolean
+                statusCode:
+                  type: integer
+                  example: 200
+        '400':
+          description: Invalid input
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "Bad Request"
+                message:
+                  type: string
+                  example: "Invalid token"
                 statusCode:
                   type: integer
                   example: 400
