@@ -24,13 +24,15 @@ tags:
     description: Notification operations
   - name: pages
     description: Pages available
+  - name: user
+    description: API for user related operations
 
 paths:
 
   /pages/landing:
       get:
         tags:
-          - auth
+          - pages
         summary: Retrieve content for the landing page
         responses:
           '200':
@@ -55,6 +57,8 @@ paths:
 
   /pages/about-us:
     get:
+      tags:
+        - pages
       summary: Retrieve content for the about us page
       responses:
         '200':
@@ -79,6 +83,8 @@ paths:
 
   /contact:
     post:
+      tags:
+        - pages
       summary: Submit a contact form
       requestBody:
         required: true
@@ -119,6 +125,8 @@ paths:
 
   /contact/messages:
     get:
+      tags:
+        - pages
       summary: Retrieve all contact messages (Admin only)
       security:
         - bearerAuth: []
@@ -155,6 +163,8 @@ paths:
 
   /users/settings:
     get:
+      tags:
+        - pages
       summary: Retrieve user settings
       security:
         - bearerAuth: []
@@ -183,6 +193,8 @@ paths:
                 $ref: "#/components/schemas/UnauthorizedErrorSchema"
 
     put:
+      tags:
+        - pages
       summary: Update user settings
       security:
         - bearerAuth: []
@@ -227,6 +239,8 @@ paths:
 
   /dashboard:
     get:
+      tags:
+        - pages
       summary: Retrieve general dashboard data
       security:
         - bearerAuth: []
@@ -268,6 +282,8 @@ paths:
 
   /users/{userId}/data:
     get:
+      tags:
+        - pages
       summary: Retrieve user-specific data for the dashboard
       security:
         - bearerAuth: []
@@ -308,6 +324,8 @@ paths:
 
   /waitlist:
     post:
+      tags:
+        - pages
       summary: Add a user to the waitlist
       requestBody:
         required: true
@@ -344,6 +362,8 @@ paths:
                 $ref: "#/components/schemas/UnprocessedEntityErrorSchema"
 
     get:
+      tags:
+        - pages
       summary: Retrieve the waitlist (Admin only)
       security:
         - bearerAuth: []
@@ -378,6 +398,8 @@ paths:
 
   /pages/marketing:
     get:
+      tags:
+        - pages
       summary: Retrieve content for the marketing page
       responses:
         '200':
@@ -401,6 +423,8 @@ paths:
                 $ref: "#/components/schemas/BadRequestErrorSchema"
 
     post:
+      tags:
+        - pages
       summary: Update marketing page content (Admin only)
       security:
         - bearerAuth: []
@@ -437,6 +461,8 @@ paths:
 
   /data/charts:
     get:
+      tags:
+        - pages
       summary: Retrieve data for charts
       responses:
         '200':
@@ -474,6 +500,8 @@ paths:
 
   /pages/{pageId}/edit:
     get:
+      tags:
+        - pages
       summary: Retrieve content for editing a specific page by ID
       parameters:
         - name: pageId
@@ -502,6 +530,8 @@ paths:
                 $ref: "#/components/schemas/BadRequestErrorSchema"
 
     put:
+      tags:
+        - pages
       summary: Update content of a specific page by ID
       parameters:
         - name: pageId
@@ -542,6 +572,8 @@ paths:
 
   /blogs:
     get:
+      tags:
+        - pages
       summary: Retrieve a list of blog posts
       responses:
         '200':
@@ -575,6 +607,8 @@ paths:
                 $ref: "#/components/schemas/BadRequestErrorSchema"
 
     post:
+      tags:
+        - pages
       summary: Create a new blog post
       requestBody:
         required: true
@@ -618,6 +652,8 @@ paths:
 
   /pages/{pageId}/content:
     get:
+      tags:
+        - pages
       summary: Retrieve content for a specific page by ID
       parameters:
         - name: pageId
@@ -646,6 +682,8 @@ paths:
                 $ref: "#/components/schemas/BadRequestErrorSchema"
 
     put:
+      tags:
+        - pages
       summary: Update content of a specific page by ID
       parameters:
         - name: pageId
@@ -686,6 +724,8 @@ paths:
 
   /blogs/{blogId}:
     get:
+      tags:
+        - pages
       summary: Retrieve details of a specific blog post
       parameters:
         - name: blogId
@@ -721,6 +761,8 @@ paths:
         
 
     put:
+      tags:
+        - pages
       summary: Update details of a specific blog post
       parameters:
         - name: blogId
@@ -1692,6 +1734,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Notification'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
         '400':
           description: No notifications found
           content:
@@ -1704,6 +1752,146 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServerErrorSchema'
+
+  /users/{user_id}:
+    put:
+      tags:
+        - user
+      summary: Update user info
+      security:
+        - secretKeyAuth: []
+      description: Updates the information of an existing user.
+      operationId: updateUserInfo
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the user to update
+      requestBody:
+        description: Updated user information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUser'
+        required: true
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchema'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessedEntityErrorSchema'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+    delete:
+      tags:
+        - user
+      summary: Delete a user
+      security:
+        - secretKeyAuth: []
+      description: Deletes a user by their ID.
+      operationId: deleteUser
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the user to delete
+      responses:
+        '204':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseSchema'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+
+  /users/{user_id}/organizations:
+    get:
+      tags:
+        - user
+      summary: Query organizations where a user belongs
+      security:
+        - secretKeyAuth: []
+      description: Retrieves a list of organizations where the specified user belongs.
+      operationId: getUserOrganizations
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the user to query organizations for
+      responses:
+        '200':
+          description: A list of organizations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Organization'
+        '401':
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorSchema'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorSchema'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorSchema'
+
 components:
 
   schemas:
@@ -1717,7 +1905,7 @@ components:
         statusCode:
           type: integer
           description: >
-            The HTTP status code. Usually 200 , 201 etc
+            The HTTP status code. Usually 200 , 201, 204 etc
           example: 201
         message:
           type: string
@@ -1858,21 +2046,21 @@ components:
     UserResponseSchema:
       type: object
       properties:
-            access_token:
-              type: string
-              description: A valid JWT that will expire in `expires_in` seconds.
-            refresh_token:
-              type: string
-              description: An opaque string that can be used once to obtain a new access and refresh token.
-            token_type:
-              type: string
-              description: What type of token this is. Only `bearer` returned, may change in the future.
-            expires_at:
-              type: string
-              format: date-time
-              description: UNIX timestamp after which the `access_token` should be renewed by using the refresh token with the `refresh_token` grant type.
-            user:
-              $ref: "#/components/schemas/UserSchema"
+        access_token:
+          type: string
+          description: A valid JWT that will expire in `expires_in` seconds.
+        refresh_token:
+          type: string
+          description: An opaque string that can be used once to obtain a new access and refresh token.
+        token_type:
+          type: string
+          description: What type of token this is. Only `bearer` returned, may change in the future.
+        expires_at:
+          type: string
+          format: date-time
+          description: UNIX timestamp after which the `access_token` should be renewed by using the refresh token with the `refresh_token` grant type.
+        user:
+          $ref: "#/components/schemas/UserSchema"
 
     IdentitySchema:
       type: object
@@ -1897,7 +2085,6 @@ components:
           type: string
           format: email
           
-
     UnprocessedEntity:
       type: object
       properties:
@@ -1945,6 +2132,7 @@ components:
         updated_at:
           type: string
           format: date-time
+
     NewPayment:
       type: object
       required:
@@ -1982,12 +2170,14 @@ components:
         status:
           type: integer
           example: 1
+
     UpdatePayment:
       type: object
       properties:
         status:
           type: integer
           example: 1
+
     StripePayment:
       type: object
       required:
@@ -2020,6 +2210,7 @@ components:
         description:
           type: string
           example: "Payment for service X"
+
     FlutterwavePayment:
       type: object
       required:
@@ -2044,6 +2235,7 @@ components:
         description:
           type: string
           example: "Payment for service Y"
+
     LemonSqueezyPayment:
       type: object
       required:
@@ -2087,6 +2279,41 @@ components:
         read:
           type: boolean
           example: false
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    UpdateUser:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          format: phone
+        language:
+          type: string
+
+    Organization:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Example Organization"
+        description:
+          type: string
+          example: "An example organization"
         created_at:
           type: string
           format: date-time
