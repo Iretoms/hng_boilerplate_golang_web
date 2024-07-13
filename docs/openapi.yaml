@@ -28,59 +28,6 @@ tags:
     description: API for user related operations
 
 paths:
-
-  /pages/landing:
-      get:
-        tags:
-          - pages
-        summary: Retrieve content for the landing page
-        responses:
-          '200':
-            description: Successful response
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    page_type:
-                      type: string
-                      example: landing
-                    content:
-                      type: string
-                      description: HTML or JSON content for the landing page
-          '400':
-            description: Bad Request
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/BadRequestErrorSchema"
-
-  /pages/about-us:
-    get:
-      tags:
-        - pages
-      summary: Retrieve content for the about us page
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  page_type:
-                    type: string
-                    example: about-us
-                  content:
-                    type: string
-                    description: HTML or JSON content for the about us page
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/BadRequestErrorSchema"
-
   /contact:
     post:
       tags:
@@ -397,31 +344,6 @@ paths:
                 $ref: "#/components/schemas/UnauthorizedErrorSchema"
 
   /pages/marketing:
-    get:
-      tags:
-        - pages
-      summary: Retrieve content for the marketing page
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  page_type:
-                    type: string
-                    example: marketing
-                  content:
-                    type: string
-                    description: HTML or JSON content for the marketing page
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/BadRequestErrorSchema"
-
     post:
       tags:
         - pages
