@@ -1987,7 +1987,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/organisation'
+                  $ref: '#/components/schemas/Organisation'
         '401':
           description: Authentication error
           content:
@@ -2624,7 +2624,7 @@ components:
         language:
           type: string
 
-    organisation:
+    Organisation:
       type: object
       properties:
         id:
