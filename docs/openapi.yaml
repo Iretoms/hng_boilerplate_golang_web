@@ -1448,6 +1448,7 @@ paths:
     get:
       tags:
         - payment
+        - super admin
       summary: List all payments
       security:
         - bearerAuth: []
@@ -1525,6 +1526,7 @@ paths:
     get:
       tags:
         - payment
+        - super admin
       summary: Get payment by ID
       security:
         - bearerAuth: []
@@ -1565,6 +1567,7 @@ paths:
     put:
       tags:
         - payment
+        - super admin
       summary: Update an existing payment
       security:
         - bearerAuth: []
@@ -1858,6 +1861,7 @@ paths:
     put:
       tags:
         - user
+        - super admin
       summary: Update user info
       security:
         - secretKeyAuth: []
@@ -1912,6 +1916,7 @@ paths:
     delete:
       tags:
         - user
+        - super admin
       summary: Delete a user
       security:
         - secretKeyAuth: []
@@ -2326,6 +2331,13 @@ components:
         verified:
           type: boolean
           example: true
+        suspended:
+          type: boolean
+          example: true
+        suspended_at:
+          type: string
+          format: date-time
+          description: Time of suspension
         identities:
           type: array
           items:
